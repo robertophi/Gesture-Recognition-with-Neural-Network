@@ -2,11 +2,7 @@
 import numpy as np
 from collections import defaultdict
 from PyQt5.QtCore import QThread
-<<<<<<< HEAD
 import cv2, time, math
-=======
-import cv2, time
->>>>>>> be118b9fae6c53433a4f2c6c1bb1436d6edf0d0f
 
 
 class ImageProcesser(QThread):
@@ -21,12 +17,9 @@ class ImageProcesser(QThread):
         self.visibleFrame = True
         self.visibleEdges = True
         self.visibleGray = True
-<<<<<<< HEAD
         self.showConvexHull = True
         self.showHullDefects = True
         self.showHoughLines = True
-=======
->>>>>>> be118b9fae6c53433a4f2c6c1bb1436d6edf0d0f
 
         self.running = False
         self.destroyAllWindows = False
@@ -41,18 +34,12 @@ class ImageProcesser(QThread):
         cap = cv2.VideoCapture('output.avi')
 
         kernel_ellipse = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (3, 3))
-<<<<<<< HEAD
         while (self.running and cap.isOpened()):
             if(self.destroyAllWindows == True):
                 cv2.destroyAllWindows()
                 self.destroyAllWindows = False
 
             time.sleep(0.1066)
-=======
-
-        while (self.running and cap.isOpened()):
-            time.sleep(0.03666)
->>>>>>> be118b9fae6c53433a4f2c6c1bb1436d6edf0d0f
             # Capture frames from the camera
             ret, originalFrame = cap.read()
             if ret == False:
@@ -83,7 +70,8 @@ class ImageProcesser(QThread):
             edges_simple = cv2.erode(edges_simple, kernel_ellipse, iterations=2)
 
             try:
-                edges = cv2.bitwise_or(edges_simple, prev1_edges)
+
+                edges = cv2.bitwise_or(edges_simple, cv2.erode(prev1_edges,kernel_ellipse,iterations=1))
             except:
                 edges = edges_simple
 
@@ -151,7 +139,6 @@ class ImageProcesser(QThread):
                         start = tuple(biggestContour[s][0])
                         end = tuple(biggestContour[e][0])
                         cv2.line(originalFrame, start, end, [0, 255, 0], 2)
-<<<<<<< HEAD
 
             if(self.showHullDefects == True):
                 for s,e,f,d in defects_list:
@@ -167,17 +154,6 @@ class ImageProcesser(QThread):
             if(self.showHoughLines == True):
                 for line in filtered_lines:
                     cv2.line(gray, line[1], line[0], (0, 0, 255), 3, cv2.LINE_AA)
-=======
-                        midx = int((start[0] + end[0]) / 2)
-                        midy = int((start[1] + end[1]) / 2)
-                        midpoint = (midx, midy)
-                        cv2.line(originalFrame, midpoint, far, [0, 255, 125], 2)
-                        cv2.circle(originalFrame, far, 5, [0, 0, 255], -1)
-
-            except:
-                print("No contour found")
-                ##########################################
->>>>>>> be118b9fae6c53433a4f2c6c1bb1436d6edf0d0f
             if(self.visibleFrame==True):
                 cv2.imshow("Frame", originalFrame)
             if(self.visibleEdges == True):
@@ -262,7 +238,6 @@ class ImageProcesser(QThread):
         return attr_dict
 
 
-<<<<<<< HEAD
     def angle(self,biggestContour):
         angle_p = 0
         angle_acum = 0
@@ -277,5 +252,3 @@ class ImageProcesser(QThread):
             angle_acum += angle_change
             angle_p = angle
         print(angle_acum)
-=======
->>>>>>> be118b9fae6c53433a4f2c6c1bb1436d6edf0d0f
