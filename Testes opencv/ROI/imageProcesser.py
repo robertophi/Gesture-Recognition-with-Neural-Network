@@ -1,7 +1,11 @@
 import numpy as np
 from collections import defaultdict
 from PyQt5.QtCore import QThread
+<<<<<<< HEAD
 import cv2, time, math
+=======
+import cv2, time
+>>>>>>> be118b9fae6c53433a4f2c6c1bb1436d6edf0d0f
 
 
 def filterLines(lines):
@@ -55,6 +59,7 @@ def cnt_hull_attributes(contour):
     return attr_dict
 
 
+<<<<<<< HEAD
 def angle(biggestContour):
     angle_p = 0
     angle_acum = 0
@@ -88,6 +93,8 @@ def filterHullDefects( defects):
         defects_list.append([s,e,f,d])
     return defects_list
 
+=======
+>>>>>>> be118b9fae6c53433a4f2c6c1bb1436d6edf0d0f
 upper = 200
 lower = 80
 thresh = 100
@@ -102,12 +109,20 @@ running = False
 running = True
 
 # cap = cv2.VideoCapture(0)
+<<<<<<< HEAD
 cap = cv2.VideoCapture('output3.avi')
+=======
+cap = cv2.VideoCapture('output.avi')
+>>>>>>> be118b9fae6c53433a4f2c6c1bb1436d6edf0d0f
 
 kernel_ellipse = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (3, 3))
 
 while (running and cap.isOpened()):
+<<<<<<< HEAD
     time.sleep(0.0566)
+=======
+    time.sleep(0.03666)
+>>>>>>> be118b9fae6c53433a4f2c6c1bb1436d6edf0d0f
     # Capture frames from the camera
     ret, originalFrame = cap.read()
     if ret == False:
@@ -195,6 +210,7 @@ while (running and cap.isOpened()):
     try:
         hull = cv2.convexHull(biggestContour, returnPoints=False)
         defects = cv2.convexityDefects(biggestContour, hull)
+<<<<<<< HEAD
         defects_list = filterHullDefects(defects)
         for s, e, f, d in defects_list:
             start = tuple(biggestContour[s][0])
@@ -205,18 +221,32 @@ while (running and cap.isOpened()):
             midpoint = (midx, midy)
             cv2.line(originalFrame, midpoint, far, [0, 255, 125], 2)
             cv2.circle(originalFrame, far, 5, [0, 0, 255], -1)
+=======
+>>>>>>> be118b9fae6c53433a4f2c6c1bb1436d6edf0d0f
         for i in range(defects.shape[0]):
             s, e, f, d = defects[i, 0]
             if (d > 0):
                 start = tuple(biggestContour[s][0])
                 end = tuple(biggestContour[e][0])
+<<<<<<< HEAD
                 cv2.line(originalFrame, start, end, [0, 255, 0], 2)
 
+=======
+                far = tuple(biggestContour[f][0])
+                cv2.line(originalFrame, start, end, [0, 255, 0], 2)
+                midx = int((start[0] + end[0]) / 2)
+                midy = int((start[1] + end[1]) / 2)
+                midpoint = (midx, midy)
+                cv2.line(originalFrame, midpoint, far, [0, 255, 125], 2)
+                cv2.circle(originalFrame, far, 5, [0, 0, 255], -1)
+        attr_dict=cnt_hull_attributes(biggestContour)
+>>>>>>> be118b9fae6c53433a4f2c6c1bb1436d6edf0d0f
 
     except:
         print("No contour found")
         ##########################################
 
+<<<<<<< HEAD
 
     '''
     try:
@@ -230,6 +260,8 @@ while (running and cap.isOpened()):
     '''
 
 
+=======
+>>>>>>> be118b9fae6c53433a4f2c6c1bb1436d6edf0d0f
     if (visibleFrame == True):
         cv2.imshow("Frame", originalFrame)
     if (visibleEdges == True):
@@ -237,7 +269,11 @@ while (running and cap.isOpened()):
     if (visibleGray == True):
         cv2.imshow("Gray", gray)
     # close the output video by pressing 'ESC'
+<<<<<<< HEAD
     k = cv2.waitKey(1) & 0xFF
+=======
+    k = cv2.waitKey(5) & 0xFF
+>>>>>>> be118b9fae6c53433a4f2c6c1bb1436d6edf0d0f
     if k == 27:
         running = False
         break
