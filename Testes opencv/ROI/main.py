@@ -15,8 +15,13 @@ import imageProcesser
 
 class ExampleApp(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
     def __init__(self):
+        # Explaining super is out of the scope of this article
+        # So please google it if you're not familar with it
+        # Simple reason why we use it here is that it allows us to
+        # access variables, methods etc in the design.py file
         super(self.__class__, self).__init__()
-        self.setupUi(self)
+        self.setupUi(self)  # This is defined in design.py file automatically
+                            # It sets up layout and widgets that are defined
         self.setWindowTitle('Settings Configuration')
 
         self.imgProc = imageProcesser.ImageProcesser()
@@ -24,8 +29,8 @@ class ExampleApp(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
 
 
         self.pushButton_1.pressed.connect(self.start)
-        self.pushButton_2.pressed.connect(self.stop)
 
+        self.pushButton_2.pressed.connect(self.stop)
         self.horizontalSlider_1.valueChanged.connect(self.Slider1)
         self.horizontalSlider_1.setValue(200) #upper
         self.horizontalSlider_2.valueChanged.connect(self.Slider2)
@@ -35,37 +40,27 @@ class ExampleApp(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
         self.horizontalSlider_4.valueChanged.connect(self.Slider4)
         self.horizontalSlider_4.setValue(110) #min
         self.horizontalSlider_5.valueChanged.connect(self.Slider5)
-        self.horizontalSlider_5.setValue(2500)
 
 
-        self.checkBox_1.clicked.connect(self.checkbox_visible)
-        self.checkBox_2.clicked.connect(self.checkbox_visible)
-        self.checkBox_3.clicked.connect(self.checkbox_visible)
-        self.checkBox_4.clicked.connect(self.checkbox_show)
-        self.checkBox_5.clicked.connect(self.checkbox_show)
-        self.checkBox_6.clicked.connect(self.checkbox_show)
-        self.checkBox_7.clicked.connect(self.checkbox_show)
-        self.checkBox_8.clicked.connect(self.checkbox_show)
+        self.checkBox_1.clicked.connect(self.checkbox_all)
+        self.checkBox_2.clicked.connect(self.checkbox_all)
+        self.checkBox_3.clicked.connect(self.checkbox_all)
+        self.checkBox_4.clicked.connect(self.checkbox_all)
+        self.checkBox_5.clicked.connect(self.checkbox_all)
+        self.checkBox_6.clicked.connect(self.checkbox_all)
+        self.checkBox_7.clicked.connect(self.checkbox_all)
+        self.checkBox_8.clicked.connect(self.checkbox_all)
 
         self.checkBox_1.click()
         self.checkBox_2.click()
         self.checkBox_3.click()
 
-        self.checkBox_5.click()
-        self.checkBox_6.click()
-        self.checkBox_7.click()
 
 
-    def checkbox_visible(self):
+    def checkbox_all(self):
         self.imgProc.visibleFrame = self.checkBox_1.isChecked()
         self.imgProc.visibleEdges = self.checkBox_2.isChecked()
-        self.imgProc.visibleGray  = self.checkBox_3.isChecked()
-        self.imgProc.destroyAllWindows = True
-    def checkbox_show(self):
-        self.imgProc.showConvexHull  = self.checkBox_5.isChecked()
-        self.imgProc.showHullDefects  = self.checkBox_6.isChecked()
-        self.imgProc.showHoughLines  = self.checkBox_7.isChecked()
-
+        self.imgProc.visibleGray = self.checkBox_3.isChecked()
 
     def Slider1(self):
         temp = self.horizontalSlider_1.value()
@@ -84,9 +79,7 @@ class ExampleApp(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
         self.imgProc.minLineSize = temp
         self.lcdNumber_4.display(temp)
     def Slider5(self):
-        temp = self.horizontalSlider_5.value()
-        self.imgProc.defectsSize = temp
-        self.lcdNumber_5.display(temp)
+        print("Nothing on slider 5")
 
     def start(self):
         self.imgProc.running = True
@@ -104,20 +97,14 @@ class ExampleApp(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
     def keyPressEvent(self, e):
         #Escape = interrompe vídeo
         #Ctrl + Q = fecha o programa
-        mod = QApplication.keyboardModifiers()
         if e.key() == Qt.Key_Escape:
             self.stop()
-        elif (e.key() == Qt.Key_Q) and (mod == Qt.ControlModifier):
+        mod = QApplication.keyboardModifiers()
+        if (e.key() == Qt.Key_Q) and (mod == Qt.ControlModifier):
             self.stop()
             QApplication.quit()
-        elif(e.key() == Qt.Key_S):
-            self.pressedS()
 
-    def pressedS(self):
-        if(self.imgProc.running == True):
-            self.stop()
-        else:
-            self.start()
+
 
 
 def main():
