@@ -109,7 +109,7 @@ class ExampleApp(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
         mod = QApplication.keyboardModifiers()
         if e.key() == Qt.Key_Escape:
             self.stop()
-        elif (e.key() == Qt.Key_Q) and (mod == Qt.ControlModifier):
+        elif e.key() == Qt.Key_Q:  #(e.key() == Qt.Key_Q) and (mod == Qt.ControlModifier):
             self.stop()
             QApplication.quit()
         elif(e.key() == Qt.Key_S):

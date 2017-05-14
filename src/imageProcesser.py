@@ -8,12 +8,13 @@ import cv2, time, math
 class ImageProcesser(QThread):
     def __init__(self):
         QThread.__init__(self)
-        self.upper = 110
+        self.upper = 200
         self.lower = 80
         self.thresh = 100
         self.minLineSize = 30
         self.defectsSize = 2500
 
+        self.bottonLine = -120
         self.visibleFrame = True
         self.visibleEdges = True
         self.visibleGray = True
@@ -35,9 +36,10 @@ class ImageProcesser(QThread):
         cap = cv2.VideoCapture('output.avi')
 
         kernel_ellipse = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (3, 3))
-
+        #kernel_ellipse=cv2.getStructuringElement(cv2.MORPH_CROSS, (3, 3))
         font = cv2.FONT_HERSHEY_SIMPLEX
-
+        prev_edges = -1
+        prev_flooded_edges = -1
         while (self.running and cap.isOpened()):
             if(self.destroyAllWindows == True):
                 cv2.destroyAllWindows()
@@ -67,22 +69,15 @@ class ImageProcesser(QThread):
             # Simple edge = edge da imagem atual processado
             # Previous edges = edges calculados das imagem anteriores
 
-            originalEdges = cv2.Canny(gray, self.lower, self.upper)
-            edges_simple = originalEdges
-            edges_simple[-120:, :] = 0
-            edges_simple = cv2.dilate(edges_simple, kernel_ellipse, iterations=4)
-            edges_simple = cv2.erode(edges_simple, kernel_ellipse, iterations=2)
+            edges, prev_edges = self.findEdges(gray,prev_edges, kernel_ellipse)
+            flooded_eges, prev_flooded_edges = self.floodFillEdges(edges,prev_flooded_edges)
 
-            try:
 
-                edges = cv2.bitwise_or(edges_simple, cv2.erode(prev1_edges,kernel_ellipse,iterations=1))
-            except:
-                edges = edges_simple
 
-            prev1_edges = edges_simple
 
-            edges = cv2.dilate(edges, kernel_ellipse, iterations=2)
-            im2, contours, hierarchy = cv2.findContours(edges, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+            cv2.imshow("Fill", flooded_eges)
+
+            im2, contours, hierarchy = cv2.findContours(flooded_eges, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
             ##########################################
 
 
@@ -126,6 +121,7 @@ class ImageProcesser(QThread):
                     biggestContour = cnt
 
             try:
+                cv2.drawContours(originalFrame,[biggestContour],-1,(255,0,0),2)
                 hull = cv2.convexHull(biggestContour, returnPoints=False)
                 defects = cv2.convexityDefects(biggestContour, hull)
                 defects_list = self.filterHullDefects(defects)
@@ -135,29 +131,33 @@ class ImageProcesser(QThread):
             fps_c = 1/(time.time()-t)
             self.fps = 0.75*self.fps + 0.25*fps_c
             cv2.putText(originalFrame, str(self.fps), (590, 30), font, 1, (255, 255, 255), 2, cv2.LINE_AA)
+            try:
+                if(self.showConvexHull == True):
+                    for i in range(defects.shape[0]):
+                        s, e, f, d = defects[i, 0]
+                        if (d > 0):
+                            start = tuple(biggestContour[s][0])
+                            end = tuple(biggestContour[e][0])
+                            cv2.line(originalFrame, start, end, [0, 255, 0], 2)
 
-            if(self.showConvexHull == True):
-                for i in range(defects.shape[0]):
-                    s, e, f, d = defects[i, 0]
-                    if (d > 0):
+                if(self.showHullDefects == True):
+                    for s,e,f,d in defects_list:
                         start = tuple(biggestContour[s][0])
                         end = tuple(biggestContour[e][0])
+                        far = tuple(biggestContour[f][0])
                         cv2.line(originalFrame, start, end, [0, 255, 0], 2)
+                        midx = int((start[0] + end[0]) / 2)
+                        midy = int((start[1] + end[1]) / 2)
+                        midpoint = (midx, midy)
+                        cv2.line(originalFrame, midpoint, far, [0, 255, 125], 2)
+                        cv2.circle(originalFrame, far, 5, [0, 0, 255], -1)
 
-            if(self.showHullDefects == True):
-                for s,e,f,d in defects_list:
-                    start = tuple(biggestContour[s][0])
-                    end = tuple(biggestContour[e][0])
-                    far = tuple(biggestContour[f][0])
-                    cv2.line(originalFrame, start, end, [0, 255, 0], 2)
-                    midx = int((start[0] + end[0]) / 2)
-                    midy = int((start[1] + end[1]) / 2)
-                    midpoint = (midx, midy)
-                    cv2.line(originalFrame, midpoint, far, [0, 255, 125], 2)
-                    cv2.circle(originalFrame, far, 5, [0, 0, 255], -1)
-            if(self.showHoughLines == True):
-                for line in filtered_lines:
-                    cv2.line(gray, line[1], line[0], (0, 0, 255), 3, cv2.LINE_AA)
+                if(self.showHoughLines == True):
+                    for line in filtered_lines:
+                        cv2.line(gray, line[1], line[0], (0, 0, 255), 3, cv2.LINE_AA)
+            except:
+                print("cant show")
+
             if(self.visibleFrame==True):
                 cv2.imshow("Frame", originalFrame)
             if(self.visibleEdges == True):
@@ -172,6 +172,40 @@ class ImageProcesser(QThread):
 
         cap.release()
         cv2.destroyAllWindows()
+
+    def findEdges(self, gray, prev_edges, kernel):
+
+        originalEdges = cv2.Canny(gray, self.lower, self.upper)
+        edges_simple = originalEdges
+        edges_simple[self.bottonLine:, :] = 0
+        edges_simple = cv2.dilate(edges_simple, kernel, iterations=4)
+        edges_simple = cv2.erode(edges_simple, kernel, iterations=2)
+
+        try:
+            edges = cv2.bitwise_or(edges_simple, cv2.erode(prev_edges, kernel, iterations=1))
+        except:
+            edges = edges_simple
+
+        prev_edges = edges_simple
+        edges = cv2.dilate(edges, kernel, iterations=2)
+        edges = cv2.erode(edges, kernel, iterations=1)
+        return [edges, prev_edges]
+
+    def floodFillEdges(self, edges, prev_flooded):
+        edges[self.bottonLine - 5, :] = 255
+        floodfill = edges.copy()
+        h, w = edges.shape[:2]
+        mask = np.zeros((h + 2, w + 2), np.uint8)
+        cv2.floodFill(floodfill, mask, (0, 0), 255);
+        floodfill_inv = cv2.bitwise_not(floodfill)
+        floodfill_inv[self.bottonLine - 5:, :] = 0
+        try:
+            floodfill = cv2.bitwise_or(floodfill_inv, prev_flooded)
+        except:
+            floodfill = floodfill_inv
+        floodfill_prev = floodfill_inv
+        return [floodfill, floodfill_prev]
+
 
     def filterHullDefects(self, defects):
         defects_index_list = []
