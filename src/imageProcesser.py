@@ -21,6 +21,7 @@ class ImageProcesser(QThread):
         self.showHullDefects = True
         self.showHoughLines = True
 
+        self.fps = 0
         self.running = False
         self.destroyAllWindows = False
 
@@ -34,12 +35,15 @@ class ImageProcesser(QThread):
         cap = cv2.VideoCapture('output.avi')
 
         kernel_ellipse = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (3, 3))
+
+        font = cv2.FONT_HERSHEY_SIMPLEX
+
         while (self.running and cap.isOpened()):
             if(self.destroyAllWindows == True):
                 cv2.destroyAllWindows()
                 self.destroyAllWindows = False
-
-            time.sleep(0.1066)
+            t = time.time()
+            time.sleep(0.03066)
             # Capture frames from the camera
             ret, originalFrame = cap.read()
             if ret == False:
@@ -128,9 +132,9 @@ class ImageProcesser(QThread):
             except:
                 print("No contour found")
                 ##########################################
-
-
-
+            fps_c = 1/(time.time()-t)
+            self.fps = 0.75*self.fps + 0.25*fps_c
+            cv2.putText(originalFrame, str(self.fps), (590, 30), font, 1, (255, 255, 255), 2, cv2.LINE_AA)
 
             if(self.showConvexHull == True):
                 for i in range(defects.shape[0]):
