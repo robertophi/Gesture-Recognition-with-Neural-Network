@@ -65,11 +65,11 @@ class Ui_MainWindow(object):
         self.horizontalSlider_5 = QtWidgets.QSlider(self.verticalLayoutWidget)
         self.horizontalSlider_5.setOrientation(QtCore.Qt.Horizontal)
         self.horizontalSlider_5.setObjectName("horizontalSlider_5")
-        self.horizontalSlider_5.setRange(0,255)
+        self.horizontalSlider_5.setRange(0,15000)
         self.verticalLayout.addWidget(self.horizontalSlider_5)
 
         self.verticalLayoutWidget_2 = QtWidgets.QWidget(self.centralWidget)
-        self.verticalLayoutWidget_2.setGeometry(QtCore.QRect(20, 60, 71, 191))
+        self.verticalLayoutWidget_2.setGeometry(QtCore.QRect(10, 55, 90, 191))
         self.verticalLayoutWidget_2.setObjectName("verticalLayoutWidget_2")
         self.verticalLayout_2 = QtWidgets.QVBoxLayout(self.verticalLayoutWidget_2)
         self.verticalLayout_2.setContentsMargins(11, 11, 11, 11)
@@ -133,7 +133,7 @@ class Ui_MainWindow(object):
 
 
         self.verticalLayoutWidget_4 = QtWidgets.QWidget(self.centralWidget)
-        self.verticalLayoutWidget_4.setGeometry(QtCore.QRect(80, 270, 111, 111))
+        self.verticalLayoutWidget_4.setGeometry(QtCore.QRect(80, 270, 200, 111))
         self.verticalLayoutWidget_4.setObjectName("verticalLayoutWidget_4")
         self.verticalLayout_4 = QtWidgets.QVBoxLayout(self.verticalLayoutWidget_4)
         self.verticalLayout_4.setContentsMargins(11, 11, 11, 11)
@@ -159,7 +159,7 @@ class Ui_MainWindow(object):
 
 
         self.verticalLayoutWidget_5 = QtWidgets.QWidget(self.centralWidget)
-        self.verticalLayoutWidget_5.setGeometry(QtCore.QRect(230, 270, 111, 111))
+        self.verticalLayoutWidget_5.setGeometry(QtCore.QRect(230, 270, 200, 111))
         self.verticalLayoutWidget_5.setObjectName("verticalLayoutWidget_5")
         self.verticalLayout_5 = QtWidgets.QVBoxLayout(self.verticalLayoutWidget_5)
         self.verticalLayout_5.setContentsMargins(11, 11, 11, 11)
@@ -186,7 +186,7 @@ class Ui_MainWindow(object):
         self.pushButton_1.setGeometry(QtCore.QRect(90, 390, 75, 23))
         self.pushButton_1.setObjectName("pushButton_1")
         self.pushButton_2 = QtWidgets.QPushButton(self.centralWidget)
-        self.pushButton_2.setGeometry(QtCore.QRect(240, 390, 75, 23))
+        self.pushButton_2.setGeometry(QtCore.QRect(170, 390, 75, 23))
         self.pushButton_2.setObjectName("pushButton_2")
 
 
@@ -229,15 +229,15 @@ class Ui_MainWindow(object):
         self.label_2.setText(_translate("MainWindow", "Lower"))
         self.label_3.setText(_translate("MainWindow", "Thresh"))
         self.label_4.setText(_translate("MainWindow", "Min Line Size"))
-        self.label_5.setText(_translate("MainWindow", "Label5"))
+        self.label_5.setText(_translate("MainWindow", "Defects Size"))
         self.checkBox_1.setText(_translate("MainWindow", "Show frame"))
         self.checkBox_2.setText(_translate("MainWindow", "Show edges img."))
         self.checkBox_3.setText(_translate("MainWindow", "Show gray img."))
-        self.checkBox_4.setText(_translate("MainWindow", " "))
-        self.checkBox_5.setText(_translate("MainWindow", " "))
-        self.checkBox_6.setText(_translate("MainWindow", " "))
-        self.checkBox_7.setText(_translate("MainWindow", " "))
-        self.checkBox_8.setText(_translate("MainWindow", " "))
+        self.checkBox_4.setText(_translate("MainWindow", "N/A"))
+        self.checkBox_5.setText(_translate("MainWindow", "Show Convex Hull "))
+        self.checkBox_6.setText(_translate("MainWindow", "Show Hull Defects"))
+        self.checkBox_7.setText(_translate("MainWindow", "Show Hough lines"))
+        self.checkBox_8.setText(_translate("MainWindow", "N/A"))
         self.label_tittle.setText(_translate("MainWindow", ".................."))
         self.menuMain.setTitle(_translate("MainWindow", "Main"))
         self.menuHelp.setTitle(_translate("MainWindow", "Help"))
