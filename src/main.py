@@ -1,6 +1,8 @@
 from PyQt5.QtCore import Qt, QThread
 from PyQt5 import QtWidgets
 from PyQt5.QtWidgets import QWidget, QApplication
+from PyQt5.QtGui import QIcon
+
 import sys # We need sys so that we can pass argv to QApplication
 import time
 import cv2
@@ -18,7 +20,7 @@ class ExampleApp(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
         super(self.__class__, self).__init__()
         self.setupUi(self)
         self.setWindowTitle('Settings Configuration')
-
+        self.setWindowIcon(QIcon('icon.png'))
         self.imgProc = imageProcesser.ImageProcesser()
         #self.start()
 
@@ -107,7 +109,7 @@ class ExampleApp(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
         mod = QApplication.keyboardModifiers()
         if e.key() == Qt.Key_Escape:
             self.stop()
-        elif (e.key() == Qt.Key_Q) and (mod == Qt.ControlModifier):
+        elif e.key() == Qt.Key_Q:  #(e.key() == Qt.Key_Q) and (mod == Qt.ControlModifier):
             self.stop()
             QApplication.quit()
         elif(e.key() == Qt.Key_S):
