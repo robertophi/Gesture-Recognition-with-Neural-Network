@@ -233,7 +233,7 @@ class Ui_MainWindow(object):
         self.checkBox_1.setText(_translate("MainWindow", "Show frame"))
         self.checkBox_2.setText(_translate("MainWindow", "Show edges img."))
         self.checkBox_3.setText(_translate("MainWindow", "Show gray img."))
-        self.checkBox_4.setText(_translate("MainWindow", "N/A"))
+        self.checkBox_4.setText(_translate("MainWindow", "Show floodfill"))
         self.checkBox_5.setText(_translate("MainWindow", "Show Convex Hull "))
         self.checkBox_6.setText(_translate("MainWindow", "Show Hull Defects"))
         self.checkBox_7.setText(_translate("MainWindow", "Show Hough lines"))

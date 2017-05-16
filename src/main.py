@@ -43,7 +43,7 @@ class ExampleApp(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
         self.checkBox_1.clicked.connect(self.checkbox_visible)
         self.checkBox_2.clicked.connect(self.checkbox_visible)
         self.checkBox_3.clicked.connect(self.checkbox_visible)
-        self.checkBox_4.clicked.connect(self.checkbox_show)
+        self.checkBox_4.clicked.connect(self.checkbox_visible)
         self.checkBox_5.clicked.connect(self.checkbox_show)
         self.checkBox_6.clicked.connect(self.checkbox_show)
         self.checkBox_7.clicked.connect(self.checkbox_show)
@@ -51,7 +51,7 @@ class ExampleApp(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
 
         self.checkBox_1.click()
         self.checkBox_2.click()
-        self.checkBox_3.click()
+        self.checkBox_4.click()
 
         self.checkBox_5.click()
         self.checkBox_6.click()
@@ -62,11 +62,12 @@ class ExampleApp(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
         self.imgProc.visibleFrame = self.checkBox_1.isChecked()
         self.imgProc.visibleEdges = self.checkBox_2.isChecked()
         self.imgProc.visibleGray  = self.checkBox_3.isChecked()
+        self.imgProc.visibleFloodfill = self.checkBox_4.isChecked()
         self.imgProc.destroyAllWindows = True
     def checkbox_show(self):
-        self.imgProc.showConvexHull  = self.checkBox_5.isChecked()
+        self.imgProc.showConvexHull   = self.checkBox_5.isChecked()
         self.imgProc.showHullDefects  = self.checkBox_6.isChecked()
-        self.imgProc.showHoughLines  = self.checkBox_7.isChecked()
+        self.imgProc.showHoughLines   = self.checkBox_7.isChecked()
 
 
     def Slider1(self):
