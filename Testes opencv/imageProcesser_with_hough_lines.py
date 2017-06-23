@@ -32,7 +32,6 @@ class ImageProcesser(QThread):
     def __del__(self):
         self.wait()
 
-    #Perfomance analysis: @profile
     def run(self):
         self.running = True
 
@@ -60,19 +59,11 @@ class ImageProcesser(QThread):
 
             ##########################################
             originalGray = cv2.cvtColor(frame, cv2.COLOR_RGB2GRAY)
-            gray = cv2.GaussianBlur(originalGray, (5,5), 0)
-            ret1, gray_thresh1 = cv2.threshold(gray,self.minLineSize,255, cv2.THRESH_TOZERO)
-            ret2, gray_thresh2 = cv2.threshold(gray_thresh1,0,255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
-            gray_mask = cv2.erode(gray_thresh2,kernel_ellipse, iterations=1)
-            gray_mask = cv2.dilate(gray_mask, kernel_ellipse, iterations=4)
-
-
-
-
-            cv2.imshow("Gray Mask", gray_mask)
-            cv2.imshow("Gray Mask", gray_thresh1)
-
-
+            gray = cv2.GaussianBlur(originalGray, (5, 5), 0)
+            gray = cv2.dilate(gray, kernel_ellipse, iterations=1)
+            gray = cv2.equalizeHist(gray)
+            gray = cv2.medianBlur(gray, 3)
+            ##########################################
 
 
 
@@ -82,9 +73,9 @@ class ImageProcesser(QThread):
             # Simple edge = edge da imagem atual processado
             # Previous edges = edges calculados das imagem anteriores
 
-            edges, prev_edges = self.findEdges(gray_mask, prev_edges, kernel_ellipse)
+            edges, prev_edges = self.findEdges(gray, prev_edges, kernel_ellipse)
             flooded_eges, prev_flooded_edges = self.floodFillEdges(edges, prev_flooded_edges)
-            flooded_eges = cv2.dilate(flooded_eges,kernel_ellipse,iterations=2)
+
             im2, contours, hierarchy = cv2.findContours(flooded_eges, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
             ##########################################
 
@@ -92,12 +83,48 @@ class ImageProcesser(QThread):
 
 
 
+            ##########################################
+            '''try:
+                eroded_edges = cv2.erode(flooded_eges, kernel_ellipse, iterations=2)
+                lines = cv2.HoughLines(image=eroded_edges, rho=20,
+                                       theta=np.pi / 6, threshold=80)
+                for x in range(0,len(lines)):
+                    for rho, theta in lines[x]:
+                        a = np.cos(theta)
+                        b = np.sin(theta)
+                        x0 = a * rho
+                        y0 = b * rho
+                        x1 = int(x0 + 1000 * (-b))
+                        y1 = int(y0 + 1000 * (a))
+                        x2 = int(x0 - 1000 * (-b))
+                        y2 = int(y0 - 1000 * (a))
+
+                        cv2.line(originalFrame, (x1, y1), (x2, y2), (0, 0, 255), 2)
+                
+                lines_dict = self.dictLines(lines)
+            except:
+                print("Standard Hough Line problem")
+                ##########################################
+            '''
+
+
+
+            '''
+                ##########################################
+            try:
+                lines_p = cv2.HoughLinesP(image=edges, rho=1, theta=np.pi / 100,
+                                          threshold=self.thresh, lines=np.array([]),
+                                          minLineLength=self.minLineSize, maxLineGap=20)
+                filtered_lines = self.filterLines(lines_p)
+            except:
+                print("Probabilistic Line problem")
+                ###########################################
+            '''
+
             try:
                 biggestContour = self.findContour(contours)
             except:
                 print("Error na análise do contour")
-
-
 
             try:
                 cv2.drawContours(originalFrame, [biggestContour], -1, (255, 0, 0), 2)
@@ -133,6 +160,10 @@ class ImageProcesser(QThread):
                         cv2.line(originalFrame, midpoint, far, [0, 255, 125], 2)
                         cv2.circle(originalFrame, far, 5, [0, 0, 255], -1)
 
+                '''if (self.showHoughLines == True):
+                    for line in filtered_lines:
+                        cv2.line(gray, line[1], line[0], (0, 0, 255), 3, cv2.LINE_AA)
+                '''
             except:
                 print("Error showing one or more frames")
 
@@ -198,19 +229,20 @@ class ImageProcesser(QThread):
 
         prev_edges = edges_simple
         edges = cv2.dilate(edges, kernel, iterations=2)
-        edges = cv2.erode(edges, kernel, iterations=2)
+        edges = cv2.erode(edges, kernel, iterations=1)
         return [edges, prev_edges]
 
     def floodFillEdges(self, edges, prev_flooded):
         edges[self.bottonLine - 5, :] = 255
         edges[:,-10:] = 0
-        #edges[:,0:10] = 0
+        edges[:,0:10] = 0
         floodfill = edges.copy()
         h, w = edges.shape[:2]
         mask = np.zeros((h + 2, w + 2), np.uint8)
         cv2.floodFill(floodfill, mask, (0, 0), 255)
         floodfill_inv = cv2.bitwise_not(floodfill)
         floodfill_inv[self.bottonLine - 5:, :] = 0
+
         try:
             floodfill = cv2.bitwise_or(floodfill_inv, prev_flooded)
         except:

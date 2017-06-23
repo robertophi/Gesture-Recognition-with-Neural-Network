@@ -5,78 +5,23 @@ import time
 # Open Camera object
 cap = cv2.VideoCapture(0)
 
-# Decrease frame size
+font = cv2.FONT_HERSHEY_SIMPLEX
 
-
-def nothing(x):
-    pass
-
-
-
-# Creating a window for HSV track bars
-cv2.namedWindow('HSV_TrackBar')
-
-# Starting with 100's to prevent error while masking
-h, s, v = 100, 100, 100
-
-
-# Creating track bar
-cv2.createTrackbar('up', 'HSV_TrackBar', 180, 255, nothing)
-cv2.createTrackbar('lower', 'HSV_TrackBar', 130, 255, nothing)
-
-kernel_ellipse = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (3, 3))
-
-
+fps = 0
 while (1):
+    t=  time.time()
 
-    upper = cv2.getTrackbarPos('up','HSV_TrackBar')
-    lower = cv2.getTrackbarPos('lower','HSV_TrackBar')
-
-    print((upper,lower))
-    # Measure execution time
 
     # Capture frames from the camera
     ret, frame = cap.read()
+    fps_c = 1 / (time.time() - t)
+    fps = 0.75 * fps + 0.25 * fps_c
+    cv2.putText(frame, str(fps), (590, 30), font, 1, (255, 255, 255), 2, cv2.LINE_AA)
 
-    # Blur the image
-    frame = cv2.blur(frame, (3, 3))
-    frame = cv2.medianBlur(frame,5)
-
-
-    gray = cv2.cvtColor(frame,cv2.COLOR_RGB2GRAY)
-    gray = cv2.dilate(gray,kernel_ellipse, iterations=3)
-
-
-    edges = cv2.Canny(gray, lower, upper)
-    edges = cv2.dilate(edges,kernel_ellipse, iterations=1)
-
-    im2, contours, hierarchy = cv2.findContours(edges, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
-
-    maxArea = 0
-    for cnt in contours:
-        newArea = cv2.contourArea(cnt)
-        if newArea > maxArea:
-            maxArea =  newArea
-            biggestContour = cnt
-
-    try:
-        cv2.drawContours(frame, biggestContour, -1, (0, 255, 0), 3)
-
-        #epsilon = 0.1 * cv2.arcLength(cnt, True)
-        #approx = cv2.approxPolyDP(biggestContour, epsilon, True)
-        #cv2.drawContours(frame, [approx], -1, (0, 0, 255), 3)
-
-    except:
-        print("No contour found")
-
-    # Draw Contours
-    #cv2.drawContours(frame, contours, -1, (122,122,0), 3)
-    cv2.imshow("edge", edges)
-    cv2.imshow("Gray",gray)
     cv2.imshow("Frame",frame)
 
     # close the output video by pressing 'ESC'
-    k = cv2.waitKey(5) & 0xFF
+    k = cv2.waitKey(1) & 0xFF
     if k == 27:
         break
 

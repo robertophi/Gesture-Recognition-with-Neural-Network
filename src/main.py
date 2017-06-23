@@ -51,6 +51,7 @@ class ExampleApp(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
 
         self.checkBox_1.click()
         self.checkBox_2.click()
+        self.checkBox_3.click()
         self.checkBox_4.click()
 
         self.checkBox_5.click()

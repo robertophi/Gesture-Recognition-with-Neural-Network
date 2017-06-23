@@ -9,7 +9,7 @@ import pickle, random
 
 
 df = pd.read_csv("dataframe.csv")
-X = df[df.columns.drop("Gesture")]
+X = df[df.columns.drop(["Gesture"])]
 Y = df["Gesture"]
 X_train, X_test, Y_train, Y_test = train_test_split(X, Y)
 
@@ -24,7 +24,7 @@ X_test = scaler.transform(X_test)
 
 
 
-mlp = MLPClassifier(hidden_layer_sizes=(30,30,30))
+mlp = MLPClassifier(hidden_layer_sizes=(30,30,30), max_iter=2000)
 
 mlp.fit(X_train,Y_train)
 
