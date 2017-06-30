@@ -27,6 +27,7 @@ class ExampleApp(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
 
         self.pushButton_1.pressed.connect(self.start)
         self.pushButton_2.pressed.connect(self.stop)
+        self.pushButton_3.pressed.connect(self.pause)
 
         self.horizontalSlider_1.valueChanged.connect(self.Slider1)
         self.horizontalSlider_1.setValue(200) #upper
@@ -35,7 +36,7 @@ class ExampleApp(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
         self.horizontalSlider_3.valueChanged.connect(self.Slider3)
         self.horizontalSlider_3.setValue(80) #thresh
         self.horizontalSlider_4.valueChanged.connect(self.Slider4)
-        self.horizontalSlider_4.setValue(110) #min
+        self.horizontalSlider_4.setValue(70) #min
         self.horizontalSlider_5.valueChanged.connect(self.Slider5)
         self.horizontalSlider_5.setValue(2500)
 
@@ -43,30 +44,36 @@ class ExampleApp(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
         self.checkBox_1.clicked.connect(self.checkbox_visible)
         self.checkBox_2.clicked.connect(self.checkbox_visible)
         self.checkBox_3.clicked.connect(self.checkbox_visible)
-        self.checkBox_4.clicked.connect(self.checkbox_show)
+        self.checkBox_4.clicked.connect(self.checkbox_visible)
         self.checkBox_5.clicked.connect(self.checkbox_show)
         self.checkBox_6.clicked.connect(self.checkbox_show)
         self.checkBox_7.clicked.connect(self.checkbox_show)
         self.checkBox_8.clicked.connect(self.checkbox_show)
 
         self.checkBox_1.click()
-        self.checkBox_2.click()
-        self.checkBox_3.click()
+        #self.checkBox_2.click()
+        #self.checkBox_3.click()
+        #self.checkBox_4.click()
 
         self.checkBox_5.click()
         self.checkBox_6.click()
         self.checkBox_7.click()
+        self.checkBox_8.click()
 
 
     def checkbox_visible(self):
         self.imgProc.visibleFrame = self.checkBox_1.isChecked()
         self.imgProc.visibleEdges = self.checkBox_2.isChecked()
         self.imgProc.visibleGray  = self.checkBox_3.isChecked()
+        self.imgProc.visibleFloodfill = self.checkBox_4.isChecked()
         self.imgProc.destroyAllWindows = True
+
     def checkbox_show(self):
-        self.imgProc.showConvexHull  = self.checkBox_5.isChecked()
+        self.imgProc.showConvexHull   = self.checkBox_5.isChecked()
         self.imgProc.showHullDefects  = self.checkBox_6.isChecked()
-        self.imgProc.showHoughLines  = self.checkBox_7.isChecked()
+        self.imgProc.drawContour   = self.checkBox_7.isChecked()
+        self.imgProc.showPredict = self.checkBox_8.isChecked()
+
 
 
     def Slider1(self):
@@ -83,7 +90,7 @@ class ExampleApp(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
         self.lcdNumber_3.display(temp)
     def Slider4(self):
         temp = self.horizontalSlider_4.value()
-        self.imgProc.minLineSize = temp
+        self.imgProc.minimumGray = temp
         self.lcdNumber_4.display(temp)
     def Slider5(self):
         temp = self.horizontalSlider_5.value()
@@ -92,6 +99,7 @@ class ExampleApp(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
 
     def start(self):
         self.imgProc.running = True
+        self.imgProc.pause = False
         self.imgProc.start()
         print("Start")
 
@@ -102,10 +110,18 @@ class ExampleApp(QtWidgets.QMainWindow, mainwindow.Ui_MainWindow):
         #Terminar o threadh
         self.imgProc.terminate()
         print("Stop")
+    def pause(self):
+        status = self.imgProc.pause
+        if(status == True):
+            self.imgProc.pause = False
+            self.pushButton_3.setText("Pause")
+        if(status == False):
+            self.imgProc.pause = True
+            self.pushButton_3.setText("Unpause")
 
     def keyPressEvent(self, e):
         #Escape = interrompe vídeo
-        #Ctrl + Q = fecha o programa
+        #Q = fecha o programa
         mod = QApplication.keyboardModifiers()
         if e.key() == Qt.Key_Escape:
             self.stop()
